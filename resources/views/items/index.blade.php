@@ -1,77 +1,108 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('Items') }}
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            {{ __('Objetos') }}
         </h2>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900 dark:text-gray-100">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50 dark:bg-gray-700">
+    <div class="py-12 bg-white-100">
+    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 ">
+        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+            <div class="p-6 text-gray-900">
+                <input type="text" id="search" class="w-25 border p-2 mb-4 rounded" placeholder="Buscar items..." />
+                <button class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded" id="btn-search">Buscar</button>
+                    <br>
+                <button class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">
+                    <a href="{{ route('items.create') }}">Crear Item</a>
+                </button>
+
+                <table class="table-auto w-full mt-10">
+                    <thead>
                         <tr>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                Name
-                            </th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                Description
-                            </th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                Picture
-                            </th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                Price
-                            </th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                Box
-                            </th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                Actions     
-                            </th>
-
-
+                            <th class="px-4 py-2 text-gray-600">Imagen</th>
+                            <th class="px-4 py-2 text-gray-600">Nombre</th>
+                            <th class="px-4 py-2 text-gray-600">Descripción</th>
+                            <th class="px-4 py-2 text-gray-600">Precio</th>
+                            <th class="px-4 py-2 text-gray-600">Caja</th>
+                            <th class="px-4 py-2 text-gray-600">Acciones</th>
                         </tr>
                     </thead>
-                    <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-800">
-                      
+                    <tbody id="items">
                         @foreach ($items as $item)
                             <tr>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    {{ $item->name }}
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    {{ $item->description }}
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <img src="{{ $item->picture }}" alt="Item Picture" class="h-10 w-10">
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    {{ $item->price }}
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    {{ $item->box->label }}
+                            <td class="border px-4 py-2 pt-5">
+                                <div class="flex justify-center h-20 w-20">
+                                @if ($item->picture)
+                                    <img src="{{ asset(Storage::url($item->picture)) }}" alt="{{ $item->name }}" class="h-20 w-20">
+                                    @else
+                                    <img src="https://via.placeholder.com/150" alt="{{ $item->name }}" class="h-20 w-20">
+                                @endif
+                                </div>
                                 </td>
 
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <a href="{{ route('items.show', $item->id) }}" class="text-indigo-600 hover:text-indigo-900">View</a>
-                                    <a href="{{ route('items.edit', $item->id) }}" class="text-indigo-600 hover:text-indigo-900">Edit</a>
-                                    <form action="{{ route('items.destroy', $item->id) }}" method="POST" class="inline">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="text-red-600 hover:text-red-900">Delete</button>
-                                    </form>
+                                <td class="border px-4 py-2">{{ $item->name }}</td>
+                                <td class="border px-4 py-2">{{ $item->description }}</td>
+                                <td class="border px-4 py-2">{{ $item->price }}</td>
+                                <td class="border px-4 py-2">
+                                    <div">
+                                        @if ($item->box_id)
+                                        {{ $item->box->label }}
+                                        @else
+                                        Caja no asignada
+                                        @endif
+                                    </div>
                                 </td>
                                 
+                                <td class="border px-4 py-2">
+    <div class="flex space-x-2">
+    <div>
+    <a href="{{ route('items.show', $item->id) }}"
+        class="inline-block bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded">Ver</a>
+</div>
+<div>
+    <a href="{{ route('items.edit', $item->id) }}"
+        class="inline-block bg-teal-500 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded">Editar</a>
+</div>
+<div>
+    <form action="{{ route('items.destroy', $item->id) }}" method="POST">
+        @csrf
+        @method('DELETE')
+        <button type="submit"
+            class="inline-block bg-pink-500 hover:bg-pink-700 text-white font-bold py-2 px-4 rounded">Eliminar</button>
+    </form>
+</div>
+<div>
+@if($item->loans()->whereNull('returned_date')->first())
+    <a href="{{ route('loans.show', $item->loans()->whereNull('returned_date')->first()->id) }}"
+        class="inline-block bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded">Ver préstamo</a>
+@else
+    <a href="{{ route('loans.create', ['item_id' => $item->id]) }}"
+        class="inline-block bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded">Prestar</a>
+@endif
+</div>
+    </div>
+</td>
                             </tr>
                         @endforeach
                     </tbody>
-                </table>
-                 
-                                
-                </div>
             </div>
         </div>
     </div>
+</div>
+
+    <script>
+     document.getElementById('search').addEventListener('keyup', function() {
+    let searchValue = this.value.toLowerCase();
+    let rows = document.querySelectorAll('#items tr');
+
+    rows.forEach(row => {
+        let itemName = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
+        if(itemName.indexOf(searchValue) === -1) {
+            row.style.display = 'none';
+        } else {
+            row.style.display = '';
+        }
+    });
+});
+    </script>
 </x-app-layout>
